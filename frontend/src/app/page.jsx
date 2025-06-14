@@ -27,7 +27,7 @@ export default function Home() {
       <div
         className="fade-in bg-gray-900 rounded-lg p-10 flex flex-col md:flex-row justify-between items-center gap-8
           opacity-0 translate-y-4 transition-opacity duration-1000
-          hover:-translate-y-2 hover:transition-transform hover:duration-500 hover:delay-100"
+          hover:-translate-y-2 hover:transition-transform hover:duration-500 "
       >
         {/* Left Text Block */}
         <div className="h-full flex flex-col items-start justify-between max-w-xl gap-24">
@@ -42,7 +42,7 @@ export default function Home() {
           <Link
             href="/problems"
             className="fade-in opacity-0 translate-y-4 bg-black p-3 rounded-xl font-bold text-amber-50 
-                      hover:bg-yellow-500 border-2 transition-all duration-1000"
+                      hover:bg-yellow-500 border-2 transition-all duration-100"
           >
             Explore
           </Link>

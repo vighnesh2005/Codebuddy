@@ -9,7 +9,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select.jsx";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu.jsx";
 import { HoverCard,HoverCardContent,HoverCardTrigger } from "@/components/ui/hover-card.jsx";
 
 
@@ -76,6 +75,10 @@ export default function TagBar() {
           </HoverCardContent>
           </HoverCard>
 
+        <button className="bg-blue-700  flex align-bottom p-2 border-2 border-black rounded-md
+          hover:bg-blue-600 transition-all duration-100 text-white font-bold"
+        >submit</button>
+
         {/* Problems */}
         <div className="w-4/5 my-5">
         {
@@ -86,7 +89,7 @@ export default function TagBar() {
                         <div>
                           {problem.id}. {problem.title}
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-4">
                           <div>{problem.acceptance}%</div>
                           {problem.difficulty == "Easy" ? (
                             <span className="text-cyan-500">{problem.difficulty}</span>
