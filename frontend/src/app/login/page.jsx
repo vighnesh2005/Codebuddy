@@ -4,13 +4,14 @@ import { useState } from "react";
 import axios from "axios"; 
 import { showSuccess, showError } from "@/components/ui/sonner.jsx";
 import { useRouter } from "next/navigation";
+import { context } from "@/context/context.js"
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const URL = process.env.NEXT_PUBLIC_BACKEND_URL;
   const Router = useRouter();
-
+  const {login} = context();
   const handleSubmit = async (e) => {
     e.preventDefault();
     try{
@@ -23,6 +24,7 @@ export default function Login() {
       });
       if(res.status === 200){
         showSuccess("Login successful!");
+        login(res.data.user);
         Router.push("/");
       }
       if(res.status === 500){

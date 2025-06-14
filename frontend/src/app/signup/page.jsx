@@ -6,16 +6,18 @@ import Toaster from "@/components/ui/sonner.jsx";
 import axios from "axios"; 
 import { showSuccess, showError } from "@/components/ui/sonner.jsx";
 import { useRouter } from "next/navigation";
+import { context } from "@/context/context.js"
 
 export default function Signup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const Router = useRouter();
+  const {login} = context();
+
   const URL = process.env.NEXT_PUBLIC_BACKEND_URL;
   const handleSubmit = async (e) => {
     e.preventDefault();
-
       try{
         const res = await axios.post(`${URL}/api/auth/signup`,{
           username:name,
@@ -27,6 +29,7 @@ export default function Signup() {
 
         if(res.status === 201){
           showSuccess("User created successfully");
+          login(res.data.user);
           Router.push("/");
         }
       }

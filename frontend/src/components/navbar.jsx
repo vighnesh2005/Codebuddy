@@ -4,7 +4,9 @@ import { usePathname } from "next/navigation";
 import { AvatarImage, Avatar, AvatarFallback } from "./ui/avatar";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuItem,DropdownMenuSeparator,DropdownMenuContent } from "./ui/dropdown-menu";
 import { Tally3 } from 'lucide-react';
-
+import { context } from "@/context/context.js"
+import axios from "axios";
+import { showSuccess } from "./ui/sonner";
 
 function Navbar(){
     const navLinks = [
@@ -14,7 +16,26 @@ function Navbar(){
     { label: 'Discussions', href: '/discussions' },
     ];
     const pathname = usePathname();
-    const isLoggedIn = false;
+    const {isLoggedIn,user,logout}= context();  
+    const URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+    // Logout 
+    const handleLogout = async ()=>{
+        console.log(":hello");
+        try {
+            const res = await axios.post(`${URL}/api/auth/logout`,{  
+            },{
+                withCredentials:true
+            });
+            if(res.status === 200){
+                logout();
+                showSuccess("Logged Out Successfully.");
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     return(
         <>
         <nav className="bg-black p-4 h-16 flex items-center justify-between sticky top-0 z-50">
@@ -26,7 +47,7 @@ function Navbar(){
                         <Link
                             key={href}
                             href={href}
-                            className={`text-xl font-light font-mono py-2 transition-colors duration-200 p-2 ${
+                            className={`text-xl font-light font-    mono py-2 transition-colors duration-200 p-2 ${
                             pathname === href
                                 ? 'text-yellow-600 bg-slate-700'
                                 : 'text-white hover:text-yellow-500'
@@ -37,7 +58,7 @@ function Navbar(){
                 ))}            
             </div>
             <div className={`flex items-center space-x-4 ${isLoggedIn == false ? "hidden":""} max-lg:hidden`} >
-                <p className="text-white">John Doe</p>
+                <p className="text-white">{user?.username}</p>
                 <DropdownMenu>
                     <DropdownMenuTrigger >
                         <Avatar className="cursor-pointer">
@@ -46,11 +67,20 @@ function Navbar(){
                         </Avatar>
                     </DropdownMenuTrigger>
 
-                    <DropdownMenuContent className="z-[1000] w-48 mt-2 bg-black border-2 border-amber-50" sideOffset={8} align="end"> 
-                        <DropdownMenuItem className="hover:bg-slate-700 text-white"><Link href={"/"}>Profile</Link></DropdownMenuItem>
-                        <DropdownMenuItem className="hover:bg-slate-700 text-white"><Link href={"/"}>Settings</Link></DropdownMenuItem>
+                    <DropdownMenuContent className={`${isLoggedIn == false ? "hidden":""} z-[1000] w-48 mt-2 bg-black border-2 border-amber-50`} sideOffset={8} align="end"> 
+                        <DropdownMenuItem className="hover:bg-slate-700 text-white"><Link href={"/profile"}>Profile</Link></DropdownMenuItem>
+                        <DropdownMenuItem className="hover:bg-slate-700 text-white"><Link href={"/settings"}>Settings</Link></DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="hover:bg-slate-700 text-white"><Link href={"/"}>Logout</Link></DropdownMenuItem>
+                        <DropdownMenuItem
+                            className="hover:bg-slate-700 text-white"
+                            onSelect={(e) => {
+                                e.preventDefault(); // optional
+                                handleLogout();
+                            }}
+                            >
+                            Logout
+                        </DropdownMenuItem>
+
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
@@ -66,13 +96,13 @@ function Navbar(){
                     <DropdownMenuTrigger className="text-white items-center flex">
                         <Tally3 className="w-8 h-8 rotate-90 " />
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent  className="z-[1000] w-48 mt-2 bg-black border-2 border-amber-50" sideOffset={8} align="end">
+                    <DropdownMenuContent  className={`lg:hidden z-[1000] w-48 mt-2 bg-black border-2 border-amber-50" sideOffset={8} align="end `}>
                         <DropdownMenuItem className={` text-white ${isLoggedIn ? "" : "hidden"} my-2`}>
                             <Avatar className="cursor-pointer">
                             <AvatarImage src="/file.svg" alt="User Avatar" />
                             <AvatarFallback className="bg-gray-700 text-white">U</AvatarFallback>
                             </Avatar>
-                            <p className="text-white text-xl font-light font-mono py-2">John Doe</p>
+                            <p className="text-white text-xl font-light font-mono py-2">{user?.username}</p>
                         </DropdownMenuItem>
 
                         <DropdownMenuItem className={` text-white ${isLoggedIn ? "hidden" : ""}`}>
@@ -131,9 +161,9 @@ function Navbar(){
                         <DropdownMenuSeparator />
             
                         <DropdownMenuItem className={`${isLoggedIn ? "hover:bg-slate-700 text-white" : "hidden"}`}>
-                            <Link href="/logout" className={`text-xl font-light font-mono py-2 transition-colors duration-200 p-2 text-white hover:text-yellow-500`}>
+                            <button onClick={handleLogout} className={`text-xl font-light font-mono py-2 transition-colors duration-200 p-2 text-white hover:text-yellow-500`}>
                                 Logout
-                            </Link>
+                            </button>
                         </DropdownMenuItem>
             
                     </DropdownMenuContent>
