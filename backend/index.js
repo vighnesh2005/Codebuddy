@@ -3,6 +3,8 @@ import connectDB from './utils/database.js';
 import cookieParser from 'cookie-parser';
 import authRoutes from './routes/auth.route.js';
 import cors from "cors";
+import problemRoutes from './routes/problem.route.js';
+import addRoutes from './routes/addproblem.route.js';
 
 const app = express();
 
@@ -14,6 +16,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use("/api/auth",authRoutes);
+app.use("/api/p",problemRoutes)
+app.use("/api/addproblem",addRoutes)
 
 app.get('/', (req, res) => {
   res.send('Hello, World!');
