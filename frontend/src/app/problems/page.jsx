@@ -57,11 +57,12 @@ export default function TagBar() {
 
         {/* sort-bar */}
         <HoverCard>
-          <HoverCardTrigger>
         <Select value={sort} onValueChange={(val) => setSort(val)}>
+          <HoverCardTrigger>
           <SelectTrigger className="bg-black text-white w-full flex align-bottom py-5 border-2 border-white rounded-md">
             <SelectValue placeholder="Sort" />
           </SelectTrigger>
+          </HoverCardTrigger>
           <SelectContent className="bg-black text-white py-2">
             <SelectItem value="difficulty-increasing" className="hover:bg-gray-900">Difficulty - Low</SelectItem>
             <SelectItem value="difficulty-decreasing" className="hover:bg-gray-900">Difficulty - High</SelectItem>
@@ -69,7 +70,6 @@ export default function TagBar() {
             <SelectItem value="acceptance-low" className="hover:bg-gray-900">Acceptance - Low</SelectItem>
           </SelectContent>
         </Select>
-          </HoverCardTrigger>
           <HoverCardContent className="bg-black text-white">
             Sort the problems 
           </HoverCardContent>
