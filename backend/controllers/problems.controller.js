@@ -7,12 +7,13 @@ import { redis } from "../utils/redis.js";
 
 export const getProblems = async (req, res) => {
   const { isLoggedIn, id } = req.body;
-
+  
   try {
+    
     const problemsCache = await redis.get("problems");
       let problems = problemsCache ? problemsCache : null;
     if (!problems) {
-      problems = await Problem.find({}).lean().select('id name acceptance difficulty tags');
+      problems = await Problem.find({}).lean().select('id name acceptance difficulty tags _id');
       await redis.set("problems", JSON.stringify(problems), { EX: 3600 });
     }
 
@@ -87,7 +88,7 @@ export const getProblem = async (req, res) => {
 export const discussions = async (req, res) => {
   const { id } = req.body;
   try {
-    const discussions = await ProblemDiscussion.find({ problem: id }).lean();
+    const discussions = await ProblemDiscussion.find({ problem: id }).populate("user","username profile _id").lean();
     return res.status(200).json({ discussions });
   } catch (error) {
     console.error("Discussions Error:", error);

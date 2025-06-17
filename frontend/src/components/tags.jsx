@@ -12,7 +12,7 @@ export default function Tags(props){
                     return(
                         <div key={index} className="text-white bg-gray-800 p-3 rounded-3xl hover:bg-gray-600 transition-all duration-100">
                             {tag.name}
-                            <div className="inline-block bg-gray-900 rounded-2xl p-1 mx-2">{tag.count}</div>
+                            <div className="inline-block bg-gray-900 rounded-2xl p-1 px-3 mx-2">{tag.total}</div>
                         </div>
                     )
                 })
@@ -22,7 +22,7 @@ export default function Tags(props){
                     return(
                         <div key={index} className="text-white bg-gray-800 p-3 rounded-3xl hover:bg-gray-600 transition-all duration-100">
                             {tag.name}
-                            <div className="inline-block bg-gray-900 rounded-2xl p-1 mx-2">{tag.count}</div>
+                            <div className="inline-block bg-gray-900 rounded-2xl p-1 px-3 mx-2">{tag.total}</div>
                         </div>
                     )
                 })

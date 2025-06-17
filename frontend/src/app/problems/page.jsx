@@ -1,6 +1,5 @@
 "use client";
-import { useState } from "react";
-import { Funnel } from "lucide-react";
+import { useState, useEffect } from "react";
 import Tags from "@/components/tags.jsx"; 
 import {
   Select,
@@ -10,102 +9,128 @@ import {
   SelectValue,
 } from "@/components/ui/select.jsx";
 import { HoverCard,HoverCardContent,HoverCardTrigger } from "@/components/ui/hover-card.jsx";
+import axios from "axios";
+import {context} from "@/context/context.js";
+import { showError } from "@/components/ui/sonner";
+import Link from "next/link";
+import { Check } from "lucide-react";
+import Loader from "@/components/loading";
 
+export default function Problems() {
 
-export default function TagBar() {
-  const tags = [
-    { name: "Array", count: 1931 },
-    { name: "String", count: 795 },
-    { name: "Hash Table", count: 704 },
-    { name: "Dynamic Programming", count: 594 },
-    { name: "Math", count: 588 },
-    { name: "Sorting", count: 456 },
-    { name: "Greedy", count: 418 },
-    { name: "Depth-First Search", count: 325 },
-    { name: "Binary Search", count: 300 },
-    { name: "Graph", count: 280 },
-    { name: "Backtracking", count: 200 },
-    { name: "Stack", count: 190 },
-    { name: "Two Pointers", count: 160 },
-    { name: "Trie", count: 150 },
-  ];
+  const URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+  const [tags,setTags] = useState([]);
 
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("difficulty-increasing");
-  const problems = [
-    // Sample problems data
-    { id: 1, title: "Two Sum", difficulty: "Easy", acceptance: 45.34 },
-    { id: 2, title: "Longest Substring Without Repeating Characters", difficulty: "Med.", acceptance: 30.23 },
-    { id: 3, title: "Median of Two Sorted Arrays", difficulty: "Hard", acceptance: 20.34 },
-    // Add more problems as needed
-  ];
-  return (
-    <div className="p-4">
-      <Tags tags={tags} />
+  const [problems, setProblems] = useState([]);
+  const {isLoggedIn,user} = context();
+  const [loading, setLoading] = useState(true);
+  const [solved, setSolved] = useState([]);
 
-      {/* Search & Sort Controls */}
-    
-    {/* search-bar  */}
-    <div className="flex flex-wrap gap-4 items-start my-5 align-bottom">
-        <input
-          className="bg-slate-200 w-2/5 min-w-[20.5rem] p-2 rounded-md"
-          type="text"
-          placeholder="Search a problem"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-
-        {/* sort-bar */}
-        <HoverCard>
-        <Select value={sort} onValueChange={(val) => setSort(val)}>
-          <HoverCardTrigger>
-          <SelectTrigger className="bg-black text-white w-full flex align-bottom py-5 border-2 border-white rounded-md">
-            <SelectValue placeholder="Sort" />
-          </SelectTrigger>
-          </HoverCardTrigger>
-          <SelectContent className="bg-black text-white py-2">
-            <SelectItem value="difficulty-increasing" className="hover:bg-gray-900">Difficulty - Low</SelectItem>
-            <SelectItem value="difficulty-decreasing" className="hover:bg-gray-900">Difficulty - High</SelectItem>
-            <SelectItem value="acceptance-high" className="hover:bg-gray-900">Acceptance - High</SelectItem>
-            <SelectItem value="acceptance-low" className="hover:bg-gray-900">Acceptance - Low</SelectItem>
-          </SelectContent>
-        </Select>
-          <HoverCardContent className="bg-black text-white">
-            Sort the problems 
-          </HoverCardContent>
-          </HoverCard>
-
-        <button className="bg-blue-700  flex align-bottom p-2 border-2 border-black rounded-md
-          hover:bg-blue-600 transition-all duration-100 text-white font-bold"
-        >submit</button>
-
-        {/* Problems */}
-        <div className="w-4/5 my-5">
-        {
-            problems.map((problem,index)=>{
-                return(
-                    <div key={index} className="odd:bg-gray-600 even:bg-gray-900 p-4
-                     hover:bg-gray-700 transition-all duration-100 text-white font-bold rounded-sm flex justify-between">
-                        <div>
-                          {problem.id}. {problem.title}
-                        </div>
-                        <div className="flex items-center gap-4">
-                          <div>{problem.acceptance}%</div>
-                          {problem.difficulty == "Easy" ? (
-                            <span className="text-cyan-500">{problem.difficulty}</span>
-                          ) : problem.difficulty == "Med." ? (
-                            <span className="text-yellow-500">{problem.difficulty}</span>
-                          ) : (
-                            <span className="text-red-500">{problem.difficulty}</span>
-                          )}
-                        </div>
-                    </div>
-                )
-            })
+  useEffect(()=>{
+    const func = async () => {
+      try {  
+        const response = await axios.post(`${URL}/api/p/problems`,{
+          isLoggedIn,
+          id:user?._id,
         }
-        </div>
+        );
+        if(response.status === 200){
+          setProblems(response.data.problems);
+          setTags(response.data.tags);
+          setSolved(new Set(response.data.solved));
+          setLoading(false);
+        }
+      } catch (error) {
+          console.error(error);
+          setLoading(true);
+          showError("Unable to fetch problems");
+      }
+    }
+    func();
+  },[])
+  
+   return (
+    <div className="p-4">
+      {loading ? (
+        <Loader />
+      ) : (
+        <>
+          <Tags tags={tags} />
 
-      </div>
+          <div className="flex flex-wrap gap-4 items-start my-5 align-bottom">
+            <input
+              className="bg-slate-200 w-2/5 min-w-[20.5rem] p-2 rounded-md"
+              type="text"
+              placeholder="Search a problem"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+
+            <HoverCard>
+              <Select value={sort} onValueChange={(val) => setSort(val)}>
+                <HoverCardTrigger>
+                  <SelectTrigger className="bg-black text-white w-full flex align-bottom py-5 border-2 border-white rounded-md">
+                    <SelectValue placeholder="Sort" />
+                  </SelectTrigger>
+                </HoverCardTrigger>
+                <SelectContent className="bg-black text-white py-2">
+                  <SelectItem value="difficulty-increasing" className="hover:bg-gray-900">
+                    Difficulty - Low
+                  </SelectItem>
+                  <SelectItem value="difficulty-decreasing" className="hover:bg-gray-900">
+                    Difficulty - High
+                  </SelectItem>
+                  <SelectItem value="acceptance-high" className="hover:bg-gray-900">
+                    Acceptance - High
+                  </SelectItem>
+                  <SelectItem value="acceptance-low" className="hover:bg-gray-900">
+                    Acceptance - Low
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              <HoverCardContent className="bg-black text-white">
+                Sort the problems
+              </HoverCardContent>
+            </HoverCard>
+
+            <button className="bg-blue-700 flex align-bottom p-2 border-2 border-black rounded-md hover:bg-blue-600 transition-all duration-100 text-white font-bold">
+              submit
+            </button>
+
+            {/* Problems List */}
+            <div className="w-4/5 my-5">
+              {problems.map((problem, index) => (
+                <Link
+                  key={index}
+                  href={`/problems/${problem._id}`}
+                  className="w-full odd:bg-gray-600 even:bg-gray-900 p-4 hover:bg-gray-700 transition-all duration-100 text-white font-bold rounded-sm flex justify-between"
+                >
+                  <div>
+                    {solved.has(problem.id) && <Check className="text-green-500 inline mr-2" />}
+                    {problem.id}. {problem.name}
+                  </div>
+                  <div className="flex items-center gap-4"> 
+                    <div>{problem.acceptance}%</div>
+                    <span
+                      className={
+                        problem.difficulty === "Easy"
+                          ? "text-cyan-500"
+                          : problem.difficulty === "Medium"
+                          ? "text-yellow-500"
+                          : "text-red-500"
+                      }
+                    >
+                      {problem.difficulty}
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

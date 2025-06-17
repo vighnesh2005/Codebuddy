@@ -34,6 +34,12 @@ const problemSchema = new mongoose.Schema({
     difficulty:{
         type:String,
         required:true
+    },
+    acceptance: {
+        type: Number,
+        min: 0,
+        max: 100,
+        default: 0, 
     }
 
 },{timestamps:true})
