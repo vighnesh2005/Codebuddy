@@ -29,15 +29,15 @@ export default function CodeEditor() {
     const [testcase,setTestcase] = useState("");
     const ready =  user;
 
+
     useEffect(() => {
         const fecthData = async () => {
-          if (!ready) return;
+          if (!ready ) return;
           const res = await axios.post(`${URL}/api/p/getproblem`,{
                 isLoggedIn,
                 id:problem,
                 user:user?._id
             },{ withCredentials: true });
-
 
             if(res.status === 200){
               console.log(res.data);
