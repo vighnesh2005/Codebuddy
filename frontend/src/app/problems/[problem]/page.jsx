@@ -1,7 +1,7 @@
 "use client";
 import Editor from "@monaco-editor/react";
 import axios from "axios";
-import { useEffect,useState } from "react";
+import { use, useEffect,useState } from "react";
 import { context } from "@/context/context.js";
 import { useParams } from "next/navigation";
 import Loader from "@/components/loading";
@@ -9,6 +9,8 @@ import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
 import { Select, SelectContent, SelectItem,  SelectTrigger, SelectValue } from "@/components/ui/select";
 import  Description  from "./description.jsx"
 import Editorial from "./editorial.jsx";
+import { Button } from "@/components/ui/button.jsx"
+
 export default function CodeEditor() {
     const { problem } = useParams();
     const { isLoggedIn, user } = context();
@@ -19,10 +21,12 @@ export default function CodeEditor() {
     });
     const [solution, setSolution] = useState([]);
     const [submissions, setSubmissions] = useState([]);
-    const [code, setCode] = useState(localStorage.getItem(`${problem}-cpp`) || "//Write your code here");
+    const [code, setCode] = useState("//Write your code here");
     const [language, setLanguage] = useState("cpp");
     const [place, setPlace] = useState("Description");
     const [complete,setComplete] = useState(0);
+    const [butt,setButt] = useState(false);
+    const [testcase,setTestcase] = useState("");
 
     useEffect(() => {
         const fecthData = async () => {
@@ -39,10 +43,13 @@ export default function CodeEditor() {
                 setSolution(res.data.solution);
                 setSubmissions(res.data.submissions);
                 setLoading(false);
+                setTestcase(res.data.problem.tests[0].input);
                 iscompleted();
             }
         }
         fecthData();
+        const storedCode = localStorage.getItem(`${problem}-${language}`);
+        if (storedCode) setCode(storedCode);
     },[])
 
     function iscompleted(){
@@ -52,7 +59,7 @@ export default function CodeEditor() {
           flag = 1;
           break;
         }
-        else{
+        else{ 
           flag = 2;
         }
       }
@@ -62,8 +69,15 @@ export default function CodeEditor() {
     
     useEffect(()=>{
       setCode(localStorage.getItem(`${problem}-${language}`)|| "//Write your code here");
-
       },[language])
+
+    const handleRun = async()=>{
+      setButt(true);
+    }
+     const handleSubmit = async()=>{
+      setButt(true);
+    }
+      
     return (
     <div>
         {
@@ -105,7 +119,10 @@ export default function CodeEditor() {
 
                   <PanelResizeHandle className="bg-black hover:bg-blue-500 w-1"></PanelResizeHandle>
 
+                  
                   <Panel className="w-full bg-gray-800 flex flex-col h-[90vh] border-gray-200 border-2">
+                    <PanelGroup direction="vertical">
+                      <Panel className="flex flex-col">
                     <nav className="p-1 border-[1px] border-gray-500">
                       <Select onValueChange={setLanguage} value={language} className="bg-black text-white">
                         <SelectTrigger className=" bg-black text-white ">
@@ -122,6 +139,7 @@ export default function CodeEditor() {
                     </nav>
 
                     {/* Editor  */}
+                    <div className="flex-grow">
                     <Editor
                       className=""
                       height="100%"
@@ -139,7 +157,29 @@ export default function CodeEditor() {
                         },
                       }}
                     />
+                    </div>
+                    </Panel>
+                    <PanelResizeHandle className="bg-black hover:bg-blue-500 h-1"></PanelResizeHandle>
+                    <Panel>
+                      <div className="flex justify-end">
+                        <div className="p-3 flex-auto"><h1 className="text-lg font-bold text-white ">Enter a sample testcase</h1></div>
+                        <Button variant="default" 
+                        className="m-2 bg-black text-white p-3 hover:bg-gray-600"
+                        onClick={handleRun} disabled={butt}>Run</Button>
+                        <Button variant="default" 
+                        className="m-2 mr-4 bg-black text-white p-3 hover:bg-gray-600"
+                        onClick={handleSubmit} disabled={butt}>Submit</Button>
+                      </div>
+                      <div className="p-2">
+                        
+                        <textarea className="bg-black text-white p-2 w-full my-1  custom-scrollbar"
+                          value={testcase} onChange={(e) => setTestcase(e.target.value)}>
 
+                        </textarea>
+                      </div>
+                    </Panel>
+                    </PanelGroup>
+                    
                   </Panel>                        
                 </PanelGroup>
                 </>

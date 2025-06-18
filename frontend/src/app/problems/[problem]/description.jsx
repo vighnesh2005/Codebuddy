@@ -11,7 +11,7 @@ export default function Description(props){
                 props.complete === 1?(
                 <h1 className="text-md text-green-500">completed</h1>
                 ):(
-                <h1 className="text-md ">unattempted</h1>
+                <h1 className="text-md text-cyan-400">unattempted</h1>
                 )
             }
             </div>
@@ -21,9 +21,9 @@ export default function Description(props){
                 props.problemData.tests.slice(0,2).map((test,index)=>{
                 return(
                     <div key={index} className="m-2">
-                    <h1 className="text-md font-bold">Test {index+1}</h1>
-                    <p className="text-md p-2">Input: {test.input}</p>
-                    <p className="text-md p-2">Output: {test.output}</p>
+                    <h1 className="text-xl font-bold text-zinc-300">Test {index+1}</h1>
+                    <pre className="text-lg p-2 text-green-600 overflow-hidden">Input: <br/><pre className="my-3 text-lg bg-black p-3 rounded-lg text-white">{test.input}</pre></pre>
+                    <pre className="text-md p-2 text-green-600 overflow-hidden">Output: <br /><pre className="my-3 text-lg bg-black p-3 rounded-lg text-white">{test.output}</pre></pre>
                     </div>
                 )
                 })

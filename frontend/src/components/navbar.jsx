@@ -63,7 +63,7 @@ function Navbar(){
                     <DropdownMenuTrigger >
                         <Avatar className="cursor-pointer">
                         <AvatarImage src="/file.svg" alt="User Avatar" />
-                        <AvatarFallback className="bg-gray-700 text-white">U</AvatarFallback>
+                        <AvatarFallback className="bg-green-600 text-white font-bold">{user?.username[0].toUpperCase()}</AvatarFallback>
                         </Avatar>
                     </DropdownMenuTrigger>
 
@@ -100,7 +100,7 @@ function Navbar(){
                         <DropdownMenuItem className={` text-white ${isLoggedIn ? "" : "hidden"} my-2`}>
                             <Avatar className="cursor-pointer">
                             <AvatarImage src="/file.svg" alt="User Avatar" />
-                            <AvatarFallback className="bg-gray-700 text-white">U</AvatarFallback>
+                                <AvatarFallback className="bg-green-600 text-white font-bold">{user?.username[0].toUpperCase()}</AvatarFallback>
                             </Avatar>
                             <p className="text-white text-xl font-light font-mono py-2">{user?.username}</p>
                         </DropdownMenuItem>

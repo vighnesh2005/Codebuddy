@@ -52,7 +52,7 @@ export default function Home() {
         <div className="fade-in opacity-0 translate-y-4 transition-all duration-1000 max-w-xl w-full max-lg:hidden">
           <img
             className="w-full h-auto rounded-lg shadow-lg object-cover"
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDdIbEtUgjUUBq9Pqgswv3NUzi_V7pY7QU8A&s"
+            src="/codeback.jpg"
             alt="Hero"
           />
         </div>
