@@ -10,9 +10,10 @@ export default function Description(props){
                 ) : 
                 props.complete === 1?(
                 <h1 className="text-md text-green-500">completed</h1>
-                ):(
+                ):
+                props.complete === 0?(
                 <h1 className="text-md text-cyan-400">unattempted</h1>
-                )
+                ):""
             }
             </div>
             <p className="text-md p-3">{props.problemData.description}</p>

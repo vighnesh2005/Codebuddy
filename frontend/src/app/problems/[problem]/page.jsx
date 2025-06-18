@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem,  SelectTrigger, SelectValue } from "
 import  Description  from "./description.jsx"
 import Editorial from "./editorial.jsx";
 import { Button } from "@/components/ui/button.jsx"
+import { showError, showSuccess } from "@/components/ui/sonner";
 
 export default function CodeEditor() {
     const { problem } = useParams();
@@ -24,13 +25,14 @@ export default function CodeEditor() {
     const [code, setCode] = useState("//Write your code here");
     const [language, setLanguage] = useState("cpp");
     const [place, setPlace] = useState("Description");
-    const [complete,setComplete] = useState(0);
     const [butt,setButt] = useState(false);
     const [testcase,setTestcase] = useState("");
+    const ready =  user;
 
     useEffect(() => {
         const fecthData = async () => {
-            const res = await axios.post(`${URL}/api/p/getproblem`,{
+          if (!ready) return;
+          const res = await axios.post(`${URL}/api/p/getproblem`,{
                 isLoggedIn,
                 id:problem,
                 user:user?._id
@@ -50,10 +52,18 @@ export default function CodeEditor() {
         fecthData();
         const storedCode = localStorage.getItem(`${problem}-${language}`);
         if (storedCode) setCode(storedCode);
-    },[])
+    },[user])
 
     function iscompleted(){
       let flag = 0;
+      if(!Array.isArray(submissions)){
+        if(submissions.flag === "Accepted"){
+          return 1;
+        }
+        else{
+          return 2;
+        }
+      }
       for(let i=0;i<submissions.length;i++){
         if(submissions[i].result === "Accepted"){
           flag = 1;
@@ -63,8 +73,7 @@ export default function CodeEditor() {
           flag = 2;
         }
       }
-      
-      setComplete(flag);
+      return flag;
     }
     
     useEffect(()=>{
@@ -73,11 +82,68 @@ export default function CodeEditor() {
 
     const handleRun = async()=>{
       setButt(true);
-    }
-     const handleSubmit = async()=>{
-      setButt(true);
-    }
       
+    }
+     const handleSubmit = async () => {
+      setButt(true);
+      const tests = problemData.tests;
+      let result = "Accepted";
+      let count = 0;
+
+      for (const element of tests) {
+        try {
+          const res = await axios.post(`${URL}/api/submit/submitproblem`, {
+            problem_id: problem,
+            code: code,
+            language: language,
+            input: element.input,
+            output: element.output
+          }, {
+            withCredentials: true
+          });
+
+          if (res.data.result !== "Accepted") {
+            showError(res.data.result);
+            result = res.data.result;
+            break; // Stop further test execution
+          } else {
+            count++; 
+          }
+
+        } catch (err) {
+          console.error("Submission error:", err);
+          showError("Server error");
+          result = "Error";
+          break;
+        }
+      }
+
+      if (count == tests.length) {
+        showSuccess("All tests passed!");
+      }
+
+      // Save final submission (regardless of pass/fail)
+      try {
+        await axios.post(`${URL}/api/submit/addsubmission`, {
+          user: user._id,
+          problem: problem,
+          code: code,
+          language: language,
+          result: result,
+          date: new Date(),
+          noofpassed: count,
+          total: tests.length
+        }, {
+          withCredentials: true
+        });
+        console.log("Final submission saved successfully");
+      } catch (error) {
+        console.error("Error saving final submission:", error);
+      }
+
+      setButt(false);
+    };
+
     return (
     <div>
         {
@@ -100,8 +166,8 @@ export default function CodeEditor() {
                       </div>
                       {
                         // description
-                        place === "Description" ? (
-                            <Description problemData={problemData} complete={complete} />
+                        place === "Description" && submissions? (
+                            <Description problemData={problemData} complete={iscompleted()} />
                         ) : place === "Editorial" ? (
                             <Editorial editorial={solution} languages={problemData.languages}/>
                         ) : place === "Submissions" ? (

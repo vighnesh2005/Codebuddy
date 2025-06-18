@@ -45,8 +45,8 @@ export const getProblems = async (req, res) => {
 };
 
 export const getProblem = async (req, res) => {
-  const { isLoggedIn, id: problemId, user } = req.body;
-
+  const { isLoggedIn, id, user } = req.body;
+  const problemId = id;
   try {
     const cachedProblem = await redis.get(`problem-${problemId}`);
     let problem = cachedProblem ? cachedProblem : null;
@@ -58,22 +58,24 @@ export const getProblem = async (req, res) => {
 
     const cachedSolution = await redis.get(`solution-${problemId}`);
     let solution = cachedSolution ? cachedSolution : null;
-
+    console.log(solution);
     if (!solution) {
       solution = await Solution.find({ problem: problemId }).lean();
       await redis.set(`solution-${problemId}`, JSON.stringify(solution), { EX: 3600 });
     }
 
     let submissions = [];
-    if (isLoggedIn && user) {
+    if (isLoggedIn === true) {
+      console.log("Fetching submissions from cache");
       const cachedSubmissions = await redis.get(`submissions-${problemId}-${user}`);
       const parsedSubmissions = cachedSubmissions ? cachedSubmissions : null;
 
       if (parsedSubmissions) {
         submissions = parsedSubmissions;
       } else {
-        submissions = await Submission.find({ problem: problemId, user }).lean();
-        await redis.set(`submissions-${problemId}-${user}`, JSON.stringify(submissions), { EX: 3600 });
+        console.log("Fetching submissions from database");
+        submissions = await Submission.find({ problem: id, user: user }).lean();
+        await redis.set(`submissions-${id}-${user}`, submissions, { EX: 3600 });
       }
     }
 
