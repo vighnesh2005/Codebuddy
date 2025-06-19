@@ -83,10 +83,10 @@ export default function Problems() {
                     Difficulty - High
                   </SelectItem>
                   <SelectItem value="acceptance-high" className="hover:bg-gray-900">
-                    Acceptance - High
+                    Accepted - High
                   </SelectItem>
                   <SelectItem value="acceptance-low" className="hover:bg-gray-900">
-                    Acceptance - Low
+                    Accepted - Low
                   </SelectItem>
                 </SelectContent>
               </Select>
@@ -112,7 +112,7 @@ export default function Problems() {
                     {problem.id}. {problem.name}
                   </div>
                   <div className="flex items-center gap-4"> 
-                    <div>{problem.acceptance}%</div>
+                    <div className="">Accepted: {problem.acceptance}</div>
                     <span
                       className={
                         problem.difficulty === "Easy"

@@ -1,6 +1,7 @@
 import { Problem } from "../models/problem.model.js";
 import { Submission } from "../models/submission.model.js";
 import { redis } from "../utils/redis.js";
+import User from "../models/user.model.js";
 import fetch from "node-fetch";
 
 export const submitProblem = async (req, res) => {
@@ -80,14 +81,46 @@ export const submitProblem = async (req, res) => {
 
 export const addSubmission = async (req, res) => {
   try {
-    console.log("Submission request body:", req.body);  // <-- add this
+    console.log("Submission request body:", req.body);
 
-    const saved = await Submission.create(req.body);  // ← submission should be an object
+    const { problem, user, code, language, result, total, noofpassed } = req.body;
 
-    await redis.set(`submissions-${saved.problem}-${saved.user}`, JSON.stringify(saved), { EX: 3600 });
-    res.status(200).json({ message: "Submission added successfully" });
+    if (!problem || !user || !code || !language || !result) {
+      return res.status(400).json({ message: "Missing required fields in submission" });
+    }
+
+    // Save submission
+    const saved = await Submission.create({ problem, user, code, language, result, total, noofpassed });
+    await redis.set(`submissions-${problem}-${user}`, JSON.stringify(saved), { EX: 3600 });
+
+
+    res.status(200).json({ message: "Submission added successfully" , saved });
+
+    if (result === "Accepted") {
+      const alreadyAccepted = await Submission.exists({ problem, user, result: "Accepted", _id: { $ne: saved._id } });
+
+      if (!alreadyAccepted) {
+        const prob = await Problem.findById(problem);
+
+        if (prob.difficulty === "easy") {
+          await User.updateOne({ _id: user }, { $inc: { easy: 1, problemssolved: 1 } });
+        } else if (prob.difficulty === "medium") {
+          await User.updateOne({ _id: user }, { $inc: { medium: 1, problemssolved: 1 } });
+        } else if (prob.difficulty === "hard") {
+          await User.updateOne({ _id: user }, { $inc: { hard: 1, problemssolved: 1 } });
+        }
+
+        await Problem.updateOne({ _id: problem }, { $inc: { acceptance: 1 } });
+        const updatedProblem = await Problem.findById(problem);
+        await redis.set(`problem-${problem}`, JSON.stringify(updatedProblem), { EX: 3600 });
+        const problems = await Problem.find({}).lean().select('id name acceptance difficulty tags _id');
+        await redis.set("problems", JSON.stringify(problems), { EX: 3600 });
+      }
+    }
+    return ;
+
   } catch (error) {
     console.error("Add Submission Error:", error);
-    res.status(500).json({ message: "Internal Server error" });
+    return res.status(500).json({ message: "Internal Server error" });
   }
-}; 
+};

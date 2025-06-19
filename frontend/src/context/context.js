@@ -40,7 +40,7 @@ export const UserProvider = ({ children }) => {
     setUser(null);
     setIsLoggedIn(false);
     localStorage.removeItem("user");
-    localStorage.addItem("user","");
+    localStorage.setItem("user","");
     localStorage.setItem("isLoggedIn", JSON.stringify(false));
   };
 

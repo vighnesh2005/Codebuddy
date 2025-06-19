@@ -5,13 +5,13 @@ export default function Description(props){
         <div className="p-6 text-white ">
             <div className="flex justify-between"><h1 className="text-2xl font-bold">{props.problemData.id}. {props.problemData.name}</h1>
             {
-                props.complete === 2? (
+                props.complete === 2 && props.isLoggedIn? (
                 <h1 className="text-md text-yellow-500">attempted</h1>
                 ) : 
-                props.complete === 1?(
+                props.complete === 1 && props.isLoggedIn?(
                 <h1 className="text-md text-green-500">completed</h1>
                 ):
-                props.complete === 0?(
+                props.complete === 0 && props.isLoggedIn?(
                 <h1 className="text-md text-cyan-400">unattempted</h1>
                 ):""
             }
@@ -38,7 +38,7 @@ export default function Description(props){
                     <li key={index}>{constraint}</li>
                     ))}
                 </ul>
-                <p className="mt-3 text-white">Acceptance: {props.problemData.acceptance}%</p>
+                <p className="mt-3 text-white">Accepted: {props.problemData.acceptance}</p>
             </div>
 
 

@@ -3,7 +3,7 @@ import { Submission } from "../models/submission.model.js";
 import { Solution } from "../models/solution.model.js";
 import { ProblemDiscussion } from "../models/problemdiscussion.model.js";
 import { redis } from "../utils/redis.js";
-
+import User from "../models/user.model.js";
 
 export const getProblems = async (req, res) => {
   const { isLoggedIn, id } = req.body;

@@ -11,6 +11,7 @@ import  Description  from "./description.jsx"
 import Editorial from "./editorial.jsx";
 import { Button } from "@/components/ui/button.jsx"
 import { showError, showSuccess } from "@/components/ui/sonner";
+import Submissions from "./submissions.jsx";
 
 export default function CodeEditor() {
     const { problem } = useParams();
@@ -27,12 +28,11 @@ export default function CodeEditor() {
     const [place, setPlace] = useState("Description");
     const [butt,setButt] = useState(false);
     const [testcase,setTestcase] = useState("");
-    const ready =  user;
 
 
     useEffect(() => {
         const fecthData = async () => {
-          if (!ready ) return;
+          if(isLoggedIn && !user) return;
           const res = await axios.post(`${URL}/api/p/getproblem`,{
                 isLoggedIn,
                 id:problem,
@@ -57,7 +57,7 @@ export default function CodeEditor() {
     function iscompleted(){
       let flag = 0;
       if(!Array.isArray(submissions)){
-        if(submissions.flag === "Accepted"){
+        if(submissions.result === "Accepted"){
           return 1;
         }
         else{
@@ -80,11 +80,16 @@ export default function CodeEditor() {
       setCode(localStorage.getItem(`${problem}-${language}`)|| "//Write your code here");
       },[language])
 
+    
     const handleRun = async()=>{
       setButt(true);
       
     }
      const handleSubmit = async () => {
+      if( !isLoggedIn ){
+        showError("Please login first");
+        return;
+      }
       setButt(true);
       const tests = problemData.tests;
       let result = "Accepted";
@@ -167,13 +172,11 @@ export default function CodeEditor() {
                       {
                         // description
                         place === "Description" && submissions? (
-                            <Description problemData={problemData} complete={iscompleted()} />
+                            <Description problemData={problemData} complete={iscompleted()} isLoggedIn={isLoggedIn} />
                         ) : place === "Editorial" ? (
                             <Editorial editorial={solution} languages={problemData.languages}/>
                         ) : place === "Submissions" ? (
-                            <div className="p-4 text-white">
-                                {problemData.submissions}
-                            </div>
+                            <Submissions submissions={submissions} />
                         ) : place === "Discussion" ? (
                             <div className="p-4 text-white">
                                 {problemData.discussion}
