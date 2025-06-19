@@ -7,75 +7,96 @@ import fetch from "node-fetch";
 export const submitProblem = async (req, res) => {
   try {
     const { problem_id, code, language, input, output } = req.body;
-    const user = req.user._id;
- 
-    // Get problem from cache or DB
+    const user = req.user?._id || null;
+
+    // Validate
+    if (!problem_id || !code || !language || input == null || output == null) {
+      return res.status(400).json({ message: "Missing fields" });
+    }
+
     let problem = await redis.get(`problem-${problem_id}`);
     if (!problem) {
       problem = await Problem.findById(problem_id);
       await redis.set(`problem-${problem_id}`, JSON.stringify(problem), { EX: 3600 });
-    } else {
-      problem = problem; 
+    } 
+    const languageMap = {
+      cpp: 54,
+      python: 71,
+      java: 62,
+      javascript: 63,
+      c: 50,
+    };
+
+    const language_id = languageMap[language];
+    if (!language_id) {
+      return res.status(400).json({ message: "Invalid language" });
     }
 
-    // Judge0 language_id mapping
-    let language_id = null;
-    if (language === "python") language_id = 71;
-    else if (language === "cpp") language_id = 54;
-    else if (language === "java") language_id = 91;
-
-    // Submit to Judge0
-    const judgeRes = await fetch("https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=false&wait=true", {
+    const judgeRes = await fetch("https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=true&wait=true", {
       method: "POST",
       headers: {
         "content-type": "application/json",
-        "X-RapidAPI-Key": "189f1cbabdmsh66286391cf081dap1da827jsn146955347166",
+        "X-RapidAPI-Key": " 4cf5577ad3msh49030f30c9ecf24p19aa61jsnd37bea5813b1",
         "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com",
       },
-      body: JSON.stringify({  
+      body: JSON.stringify({ 
         language_id,
-        source_code: code,
-        stdin: input,
-        cpu_time_limit: 1,           // 1 second
-        memory_limit: 1024 * 1024,   // 1 GB
+        source_code: Buffer.from(code).toString("base64"),
+        stdin: Buffer.from(input).toString("base64"),
+        cpu_time_limit: 1,
+        memory_limit: 1024 * 1024,
       }),
     });
 
     const result = await judgeRes.json();
-    const timeTaken = result.time || "0.0";
     const status = result.status?.description || "Unknown";
-    const actualOutput = (result.stdout || "").trim();
+    console.log(result);
+    
+
+    let errorMessage = "";
+
+    // Decode base64-encoded compile_output if it exists
+    function decodeBase64(str) {
+      try {
+        return Buffer.from(str, "base64").toString("utf-8").trim();
+      } catch (e) {
+        return "Error decoding base64";
+      }
+    }
+
+    const actualOutput = (decodeBase64(result.stdout) || "").trim();
     const expectedOutput = (output || "").trim();
+
+
+    if (result.stderr?.trim()) {
+      errorMessage = result.stderr.trim();
+    } else if (result.compile_output?.trim()) {
+      errorMessage = decodeBase64(result.compile_output);
+    } else if (result.message?.trim()) {
+      errorMessage = result.message.trim();
+    }
+
 
     let finalResult = "Rejected";
 
     if (status === "Accepted") {
-      if (actualOutput === expectedOutput) {
-        finalResult = "Accepted";
-      } else {
-        finalResult = "Wrong Answer";
-      }
-    } else if (status === "Time Limit Exceeded") {
-      finalResult = "Time Limit Exceeded";
-    } else if (status === "Memory Limit Exceeded") {
-      finalResult = "Memory Limit Exceeded";
-    } else if (status === "Runtime Error") {
-      finalResult = "Runtime Error";
+      finalResult = actualOutput === expectedOutput ? "Accepted" : "Wrong Answer";
+    } else if (["Time Limit Exceeded", "Memory Limit Exceeded", "Runtime Error"].includes(status)) {
+      finalResult = status;
     } else {
       finalResult = status;
     }
 
-    // Send result to frontend
     return res.status(200).json({
       message: "Submission evaluated",
       result: finalResult,
-      error: result.stderr,
+      error: errorMessage,
       output: actualOutput,
     });
 
   } catch (error) {
     console.error("Submit Error:", error);
-    res.status(500).json({ message: "Internal Server error" });
+    return res.status(500).json({ message: "Internal Server error" });
   }
 };
 
@@ -91,10 +112,12 @@ export const addSubmission = async (req, res) => {
 
     // Save submission
     const saved = await Submission.create({ problem, user, code, language, result, total, noofpassed });
-    await redis.set(`submissions-${problem}-${user}`, JSON.stringify(saved), { EX: 3600 });
-
-
     res.status(200).json({ message: "Submission added successfully" , saved });
+
+    const subs = await Submission.find({ problem, user });
+    await redis.set(`submissions-${problem}-${user}`, JSON.stringify(subs), { EX: 3600 });
+
+
 
     if (result === "Accepted") {
       const alreadyAccepted = await Submission.exists({ problem, user, result: "Accepted", _id: { $ne: saved._id } });

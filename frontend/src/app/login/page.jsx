@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import axios from "axios"; 
 import { showSuccess, showError } from "@/components/ui/sonner.jsx";
 import { useRouter } from "next/navigation";
@@ -11,7 +11,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const URL = process.env.NEXT_PUBLIC_BACKEND_URL;
   const Router = useRouter();
-  const {login} = context();
+  const {login} = useContext(context);
   const handleSubmit = async (e) => {
     e.preventDefault();
     try{

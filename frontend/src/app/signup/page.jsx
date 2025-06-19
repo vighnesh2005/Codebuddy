@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Toaster from "@/components/ui/sonner.jsx";
 import axios from "axios"; 
 import { showSuccess, showError } from "@/components/ui/sonner.jsx";
@@ -13,7 +13,7 @@ export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const Router = useRouter();
-  const {login} = context();
+  const {login} = useContext(context);
 
   const URL = process.env.NEXT_PUBLIC_BACKEND_URL;
   const handleSubmit = async (e) => {

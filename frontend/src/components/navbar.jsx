@@ -7,6 +7,7 @@ import { Tally3 } from 'lucide-react';
 import { context } from "@/context/context.js"
 import axios from "axios";
 import { showSuccess } from "./ui/sonner";
+import { useContext } from "react";
 
 function Navbar(){
     const navLinks = [
@@ -16,7 +17,7 @@ function Navbar(){
     { label: 'Discussions', href: '/discussions' },
     ];
     const pathname = usePathname();
-    const {isLoggedIn,user,logout}= context();  
+    const {isLoggedIn,user,logout}= useContext(context);  
     const URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
     // Logout 

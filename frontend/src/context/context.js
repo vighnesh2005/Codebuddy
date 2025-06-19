@@ -4,7 +4,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 const UserContext = createContext();
 
 // Custom hook
-export const context = () => useContext(UserContext);
+export const context = UserContext;
 
 // Context Provider
 export const UserProvider = ({ children }) => {

@@ -36,7 +36,7 @@ export default function Submissions(props) {
         <div className={`${hidden ? "" : "hidden"} p-3 `}>
             <button onClick={() => setHidden(false)} className="bg-black text-white p-2 mb-5 rounded-lg hover:bg-gray-600
             transition-all duration-100">back</button>
-            <div className="text-white text-xl text-lg px-2">Tests: {submit.noofpassed}/{submit.total}</div>
+            <div className="text-white text-lg px-2">Tests: {submit.noofpassed}/{submit.total}</div>
             <div className="w-full h-[400px]">
             <div className="flex justify-between">
                 <h1 className="font-bold text-white text-xl py-3 px-2">Submitted Code :</h1>

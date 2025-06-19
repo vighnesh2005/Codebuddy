@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import Tags from "@/components/tags.jsx"; 
 import {
   Select,
@@ -24,7 +24,7 @@ export default function Problems() {
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("difficulty-increasing");
   const [problems, setProblems] = useState([]);
-  const {isLoggedIn,user} = context();
+  const {isLoggedIn,user} = useContext(context);
   const [loading, setLoading] = useState(true);
   const [solved, setSolved] = useState([]);
 
