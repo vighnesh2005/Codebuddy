@@ -379,9 +379,9 @@ export default function CodeEditor() {
                       Submit
                     </Button>
                   </div>
-                  <div className="p-2">
+                  <div className="p-3">
                     <textarea
-                      className="bg-black text-white p-2 w-full my-1 custom-scrollbar"
+                      className="bg-black text-white p-3 w-full my-1 custom-scrollbar rounded-lg min-h-30"
                       value={testcase}
                       onChange={(e) => setTestcase(e.target.value)}
                     ></textarea>

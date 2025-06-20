@@ -64,11 +64,11 @@ export default function Discussions({ id, user_id }) {
   };
 
   return (
-    <div className="p-2">
+    <div className="p-2 overflow-hidden ">
       <textarea
         value={comment}
         onChange={(e) => setComment(e.target.value)}
-        className="bg-black text-white p-2 border-2 border-gray-600 rounded-md w-full"
+        className="bg-black text-white p-2 border-2 border-gray-600 rounded-md w-full custom-scrollbar"
         placeholder="Write a comment..."
       />
       <div className="flex justify-end">
@@ -163,7 +163,7 @@ const CommentNode = ({
           <textarea
             value={localReply}
             onChange={(e) => setLocalReply(e.target.value)}
-            className="bg-gray-800 text-white p-2 border-2 border-gray-600 rounded-md w-full mt-2"
+            className="bg-gray-800 text-white p-2 border-2 border-gray-600 rounded-md w-full mt-2 custom-scrollbar"
             placeholder="Write your reply..."
           />
           <div className="flex justify-end">
