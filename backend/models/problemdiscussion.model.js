@@ -14,7 +14,14 @@ const problemDiscussionSchema = new mongoose.Schema({
     message: {
         type: String,
         required: true
+    },
+    parent: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "ProblemDiscussion",
+        default: null
     }
+},{
+    timestamps: true
 });
 
 export const ProblemDiscussion = mongoose.model("ProblemDiscussion", problemDiscussionSchema);

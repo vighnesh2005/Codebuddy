@@ -40,7 +40,7 @@ export default function Submissions(props) {
             <div className="w-full h-[400px]">
             <div className="flex justify-between">
                 <h1 className="font-bold text-white text-xl py-3 px-2">Submitted Code :</h1>
-                <h1 className="font-bold text-white text-xl py-3 px-2 flex">language:<div className="font-medium">" {submit.language} "</div></h1>
+                <h1 className="font-bold text-white text-xl py-3 px-2 flex">language:<div className="font-medium">"{submit.language}"</div></h1>
 
             </div>            
             

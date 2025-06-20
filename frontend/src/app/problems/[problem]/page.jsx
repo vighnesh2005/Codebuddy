@@ -13,6 +13,8 @@ import Editorial from "./editorial.jsx";
 import { Button } from "@/components/ui/button.jsx";
 import { showError, showSuccess } from "@/components/ui/sonner";
 import Submissions from "./submissions.jsx";
+import { boilerplates } from "@/app/constants.js";
+import Discussions from "./discussions.jsx";
 
 export default function CodeEditor() {
   const { problem } = useParams();
@@ -24,7 +26,7 @@ export default function CodeEditor() {
   });
   const [solution, setSolution] = useState([]);
   const [submissions, setSubmissions] = useState([]);
-  const [code, setCode] = useState("//Write your code here");
+  const [code, setCode] = useState(boilerplates["cpp"].template);
   const [language, setLanguage] = useState("cpp");
   const [place, setPlace] = useState("Description");
   const [butt, setButt] = useState(false);
@@ -114,7 +116,7 @@ export default function CodeEditor() {
   }
 
   useEffect(() => {
-    setCode(localStorage.getItem(`${problem}-${language}`) || "//Write your code here");
+    setCode(localStorage.getItem(`${problem}-${language}`) || boilerplates[language].template);
   }, [language]);
 
   const handleRun = async () => {
@@ -267,7 +269,9 @@ export default function CodeEditor() {
                 ) : place === "Submissions" ? (
                   <Submissions submissions={submissions} />
                 ) : place === "Discussion" ? (
-                  <div className="p-4 text-white">{problemData.discussion}</div>
+                  <div className="p-4 text-white">
+                    <Discussions id={problemData._id} user_id = {user._id}/>
+                  </div>
                 ) : null}
               </div>
             </Panel>

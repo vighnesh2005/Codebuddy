@@ -57,7 +57,6 @@ export const getProblem = async (req, res) => {
 
     const cachedSolution = await redis.get(`solution-${problemId}`);
     let solution = cachedSolution ? cachedSolution : null;
-    console.log(solution);
     if (!solution) {
       solution = await Solution.find({ problem: problemId }).lean();
       await redis.set(`solution-${problemId}`, JSON.stringify(solution), { EX: 3600 });
@@ -90,9 +89,30 @@ export const discussions = async (req, res) => {
   const { id } = req.body;
   try {
     const discussions = await ProblemDiscussion.find({ problem: id }).populate("user","username profile _id").lean();
-    return res.status(200).json({ discussions });
+    return res.status(200).json({discussions:discussions});
   } catch (error) {
     console.error("Discussions Error:", error);
     return res.status(500).json({ message: "Internal Server error" });
   }
 };
+
+export const addComment = async (req,res)=>{
+  const {id,comment,user_id,parent} = req.body;
+  try {
+    const newComment = await ProblemDiscussion.create({
+      user:user_id,
+      message:comment,
+      problem:id,
+      parent
+    });
+    let prevcomments = await redis.get(`comments-${id}`);
+    prevcomments = prevcomments ? prevcomments : [];
+
+    prevcomments.push(newComment);
+    await redis.set(`comments-${id}`,prevcomments);
+    res.status(201).json({message:"Comment added successfully" , discussions:prevcomments});
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal Server error" });
+  }
+}

@@ -60,7 +60,12 @@ const userSchema = new mongoose.Schema({
   rank: {
     type: Number,
     unique: true
-  }
+  },
+  ratingHistory:[
+    {
+      type: Number,
+    }
+  ]
 }, {
   timestamps: true
 });
