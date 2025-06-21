@@ -6,6 +6,7 @@ import cors from "cors";
 import problemRoutes from './routes/problem.route.js';
 import addRoutes from './routes/addproblem.route.js';
 import submitRoutes from './routes/submitproblem.route.js';
+import discussionRoutes from './routes/discussions.route.js';
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use("/api/auth",authRoutes);
 app.use("/api/p",problemRoutes)
 app.use("/api/addproblem",addRoutes)
 app.use("/api/submit",submitRoutes);
+app.use("/api/discussions",discussionRoutes);
 
 app.get('/', (req, res) => {
   res.send('Hello, World!');

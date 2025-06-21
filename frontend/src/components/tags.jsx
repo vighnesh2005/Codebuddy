@@ -1,4 +1,5 @@
 "use client"
+import  Link  from 'next/link';
 import {useState} from 'react';
 
 export default function Tags(props){
@@ -10,20 +11,24 @@ export default function Tags(props){
             {
                 tags.slice(0,initialCount).map((tag,index)=>{
                     return(
-                        <div key={index} className="text-white bg-gray-800 p-3 rounded-3xl hover:bg-gray-600 transition-all duration-100">
+                        <Link href={`/problems/category/${tag.name}`} key={index}>
+                        <div  className="text-white bg-gray-800 p-3 rounded-3xl hover:bg-gray-600 transition-all duration-100">
                             {tag.name}
                             <div className="inline-block bg-gray-900 rounded-2xl p-1 px-3 mx-2">{tag.total}</div>
                         </div>
+                        </Link>
                     )
                 })
             }
             {
                 expanded && tags.slice(initialCount).map((tag,index)=>{
                     return(
-                        <div key={index} className="text-white bg-gray-800 p-3 rounded-3xl hover:bg-gray-600 transition-all duration-100">
+                        <Link href={`/problems/category/${tag.name}`} key={index}>
+                        <div  className="text-white bg-gray-800 p-3 rounded-3xl hover:bg-gray-600 transition-all duration-100">
                             {tag.name}
                             <div className="inline-block bg-gray-900 rounded-2xl p-1 px-3 mx-2">{tag.total}</div>
                         </div>
+                        </Link>
                     )
                 })
             }

@@ -116,3 +116,20 @@ export const addComment = async (req,res)=>{
     return res.status(500).json({ message: "Internal Server error" });
   }
 }
+
+export const topic = async (req,res)=>{
+  try {
+    const { tag } = req.body;
+    await redis.flushall();
+    
+    let problems = await redis.get(`problems-${tag}`);
+    if(!problems){
+      problems = await Problem.find({ tags : tag }).select(`id name difficulty acceptance _id`).lean();
+      await redis.set(`problems-${tag}`,JSON.stringify(problems),{EX:3600});
+    }
+    return res.status(200).json({problems});
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal Server error" });
+  }
+}

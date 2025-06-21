@@ -27,6 +27,18 @@ export default function Problems() {
   const {isLoggedIn,user} = useContext(context);
   const [loading, setLoading] = useState(true);
   const [solved, setSolved] = useState([]);
+  const [dumproblems, setDumproblems] = useState([]);
+
+  const getdifficulty = (difficulty) => {
+    switch (difficulty) {
+      case "Easy":
+        return 0;
+      case "Medium":
+        return 1;
+      case "Hard":
+        return 2;
+    }
+  };
 
   useEffect(()=>{
     const func = async () => {
@@ -40,6 +52,8 @@ export default function Problems() {
           setProblems(response.data.problems);
           setTags(response.data.tags);
           setSolved(new Set(response.data.solved));
+          setDumproblems(response.data.problems);
+          console.log(dumproblems);
           setLoading(false);
         }
       } catch (error) {
@@ -51,6 +65,49 @@ export default function Problems() {
     func();
   },[])
   
+  const lcs = (a, b) => {
+    const m = a.length, n = b.length;
+    const dp = Array(m + 1).fill().map(() => Array(n + 1).fill(0));
+    for (let i = 1; i <= m; i++) {
+      for (let j = 1; j <= n; j++) {
+        if (a[i - 1] === b[j - 1]) dp[i][j] = dp[i - 1][j - 1] + 1;
+        else dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+      }
+    }
+    return dp[m][n];
+  };
+
+  const handleSearch = () => {
+    setLoading(true); // Hide problems while processing
+
+    let res = search.trim() === ""
+  ? [...dumproblems]
+  : problems.filter(item => {
+      const s = search.toLowerCase();
+      const name = item.name.toLowerCase();
+      const tags = item.tags.map(tag => tag.toLowerCase());
+
+      const nameLCS = lcs(s, name);
+      const tagLCS = Math.max(...tags.map(tag => lcs(s, tag)), 0);
+
+      return nameLCS >= 4 || tagLCS >= 4;
+    });
+
+    // Sorting
+    if (sort === "difficulty-increasing") {
+      res.sort((a, b) => getdifficulty(a.difficulty) - getdifficulty(b.difficulty));
+    } else if (sort === "difficulty-decreasing") {
+      res.sort((a, b) => getdifficulty(b.difficulty) - getdifficulty(a.difficulty));
+    } else if (sort === "acceptance-high") {
+      res.sort((a, b) => b.acceptance - a.acceptance);
+    } else if (sort === "acceptance-low") {
+      res.sort((a, b) => a.acceptance - b.acceptance);
+    }
+
+    setProblems(res);
+    setLoading(false);
+  };
+
    return (
     <div className="p-4">
       {loading ? (
@@ -95,7 +152,10 @@ export default function Problems() {
               </HoverCardContent>
             </HoverCard>
 
-            <button className="bg-blue-700 flex align-bottom p-2 border-2 border-black rounded-md hover:bg-blue-600 transition-all duration-100 text-white font-bold">
+            <button className="bg-blue-700 flex align-bottom p-2 border-2
+             border-black rounded-md hover:bg-blue-600 transition-all duration-100 text-white font-bold"
+              onClick={handleSearch}
+             >
               submit
             </button>
 

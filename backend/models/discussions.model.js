@@ -19,7 +19,7 @@ const discussionsSchema = new mongoose.Schema({
     timestamps:true
 });
 
-export const Discussions = mongoose.Model("Discussion",discussionsSchema);
+export const Discussion = mongoose.model("Discussion",discussionsSchema);
 
 const discussionCommentSchema = new mongoose.Schema({
     user:{
