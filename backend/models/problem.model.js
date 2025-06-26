@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 const problemSchema = new mongoose.Schema({
     id:{
         type:Number,
-        required: true,
         unique: true    
     },
     name:{
@@ -37,12 +36,22 @@ const problemSchema = new mongoose.Schema({
     },
     acceptance: {
         type: Number,
-        min: 0,
-        max: 100,
         default: 0, 
-    }
+    },
+    isPublic: {
+        type: Boolean,
+        default: false,
+    },
 
 },{timestamps:true})
+
+problemSchema.pre("save", async function (next) {
+  if (this.isNew) {
+    const last = await mongoose.model("Problem").findOne().sort({ id: -1 });
+    this.id = last ? last.id + 1 : 1;
+  }
+  next();
+});
 
 export const Problem = mongoose.model("Problem",problemSchema);
 
@@ -58,6 +67,7 @@ const tagschema = new mongoose.Schema({
         required:true
     }
 })
+
 
 export const Tag = new mongoose.model("Tag",tagschema);
 
