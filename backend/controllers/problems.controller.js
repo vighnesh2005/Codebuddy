@@ -8,11 +8,14 @@ export const getProblems = async (req, res) => {
   const { isLoggedIn, id } = req.body;
   
   try {
-    
+    await redis.flushall();
     const problemsCache = await redis.get("problems");
       let problems = problemsCache ? problemsCache : null;
     if (!problems) {
-      problems = await Problem.find({}).lean().select('id name acceptance difficulty tags _id');
+      problems = await Problem.find({  $or: [
+    { isPublic: { $exists: false } },
+    { isPublic: true }
+  ]}).lean().select('id name acceptance difficulty tags _id');
       await redis.set("problems", JSON.stringify(problems), { EX: 3600 });
     }
 
@@ -124,7 +127,9 @@ export const topic = async (req,res)=>{
     
     let problems = await redis.get(`problems-${tag}`);
     if(!problems){
-      problems = await Problem.find({ tags : tag }).select(`id name difficulty acceptance _id`).lean();
+      problems = await Problem.find({ tags : tag , $or:[
+      { isPublic: { $exists: false }},
+    { isPublic: true }]}).select(`id name difficulty acceptance _id`).lean();
       await redis.set(`problems-${tag}`,JSON.stringify(problems),{EX:3600});
     }
     return res.status(200).json({problems});

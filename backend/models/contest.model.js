@@ -83,7 +83,29 @@ const contestSubmissionSchema = mongoose.Schema({
     }
 })
 
-
+const contestRankingSchema = mongoose.Schema({
+    contest:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Contest",
+        required: true
+    },
+    user:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
+    },
+    score:{
+        type:Number,
+        default:0
+    },
+    penalty:{
+        type:Number,
+        default:0
+    },
+    rank:{
+        type:Number,
+    }
+})
 
 
 export const Contest = mongoose.model("Contest",contestSchema);

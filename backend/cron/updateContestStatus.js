@@ -3,7 +3,7 @@ import { Contest, ContestSubmission } from "../models/contest.model.js";
 import { Submission } from "../models/submission.model.js";
 import { Problem } from "../models/problem.model.js";
 
-cron.schedule("* * * * *", async () => {
+cron.schedule("*/15 * * * *", async () => {
   try {
     const time = new Date();
 

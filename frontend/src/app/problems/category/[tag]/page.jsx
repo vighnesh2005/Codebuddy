@@ -38,7 +38,7 @@ export default function tag(){
             </div>
             <div className="bg-black p-3 w-full h-screen m-2 rounded-lg py-4">
                 {problems.length === 0 && <div className="flex justify-center items-center text-white text-2xl font-bold my-30">No problems found</div>}
-                {problems.map((problem, index) => (
+                {problems.filter(problem => problem.isPublic !== false).map((problem, index) => (
                 <Link
                   key={index}
                   href={`/problems/${problem._id}`}

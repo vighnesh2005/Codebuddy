@@ -88,9 +88,9 @@ export default function Problems() {
       const tags = item.tags.map(tag => tag.toLowerCase());
 
       const nameLCS = lcs(s, name);
-      const tagLCS = Math.max(...tags.map(tag => lcs(s, tag)), 0);
+      const tagMatch = tags.some(tag => tag.includes(s));
 
-      return nameLCS >= 4 || tagLCS >= 4;
+      return nameLCS >= 3 || tagMatch;
     });
 
     // Sorting
@@ -161,7 +161,7 @@ export default function Problems() {
 
             {/* Problems List */}
             <div className="w-4/5 my-5">
-              {problems.map((problem, index) => (
+              {problems.filter(problem => problem?.isPublic !== false).map((problem, index) => (
                 <Link
                   key={index}
                   href={`/problems/${problem._id}`}

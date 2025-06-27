@@ -7,6 +7,8 @@ import problemRoutes from './routes/problem.route.js';
 import addRoutes from './routes/addproblem.route.js';
 import submitRoutes from './routes/submitproblem.route.js';
 import discussionRoutes from './routes/discussions.route.js';
+import contestRoutes from './routes/contest.route.js';
+import "./cron/updateContestStatus.js";
 
 const app = express();
 
@@ -22,6 +24,7 @@ app.use("/api/p",problemRoutes)
 app.use("/api/addproblem",addRoutes)
 app.use("/api/submit",submitRoutes);
 app.use("/api/discussions",discussionRoutes);
+app.use("/api/contest",contestRoutes);
 
 app.get('/', (req, res) => {
   res.send('Hello, World!');
