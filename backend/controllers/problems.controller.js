@@ -8,7 +8,6 @@ export const getProblems = async (req, res) => {
   const { isLoggedIn, id } = req.body;
   
   try {
-    await redis.flushall();
     const problemsCache = await redis.get("problems");
       let problems = problemsCache ? problemsCache : null;
     if (!problems) {

@@ -140,7 +140,6 @@ export const addSubmission = async (req, res) => {
         await redis.set("problems", JSON.stringify(problems), { EX: 3600 });
       }
     }
-    return ;
 
   } catch (error) {
     console.error("Add Submission Error:", error);

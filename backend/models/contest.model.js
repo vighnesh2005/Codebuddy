@@ -104,9 +104,15 @@ const contestRankingSchema = mongoose.Schema({
     },
     rank:{
         type:Number,
+        default:-1
+    },
+    lastScoreUpdate:{
+        type:Date,
+        default:null
     }
 })
 
 
 export const Contest = mongoose.model("Contest",contestSchema);
 export const ContestSubmission = mongoose.model("ContestSubmission",contestSubmissionSchema);
+export const ContestRanking = mongoose.model("ContestRanking",contestRankingSchema);

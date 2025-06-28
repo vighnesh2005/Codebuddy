@@ -1,9 +1,13 @@
 import express from "express";
-import { addContest, getContest } from "../controllers/contest.controller.js";
+import { addContest, getContests , getContest , unregister , register } from "../controllers/contest.controller.js";
 
 const router = express.Router();
 
-router.post("/getContest", getContest);
+router.post("/getContests", getContests);
 router.post("/addContest", addContest);
+router.post("/getContest", getContest);
+router.post("/unregister", unregister);
+router.post("/register", register);
+
 
 export default router;
