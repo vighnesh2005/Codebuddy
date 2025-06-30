@@ -14,7 +14,9 @@ const app = express();
 
 
 app.use(cors({
-  origin: "*",
+  origin: (origin, callback) => {
+    callback(null, origin); // reflect the origin
+  },
   credentials: true,
 }));
 app.use(express.json());
