@@ -50,7 +50,6 @@ export const submitProblem = async (req, res) => {
 
     const result = await judgeRes.json();
     const status = result.status?.description || "Unknown";
-    console.log(result);
     
 
     let errorMessage = "";
@@ -102,8 +101,6 @@ export const submitProblem = async (req, res) => {
 
 export const addSubmission = async (req, res) => {
   try {
-    console.log("Submission request body:", req.body);
-
     const { problem, user, code, language, result, total, noofpassed } = req.body;
 
     if (!problem || !user || !code || !language || !result) {

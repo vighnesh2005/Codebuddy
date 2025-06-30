@@ -128,7 +128,7 @@ export default function Contest() {
                     contest.problems.map((problem,index)=>{
                         return(
                             <div key={index} className="text-lg text-white bg-gray-800 p-4 rounded-lg m-2">
-                                <Link href={`/contests/${id}/${problem.problem._id}?index=${problem.index}`}>{problem.index}. {problem.problem.name}</Link>
+                                <Link href={`/contests/${id}/${problem.problem._id}?index=${problem.index}&score=${problem.score}`}>{problem.index}. {problem.problem.name}</Link>
                             </div>
                         )
                     })

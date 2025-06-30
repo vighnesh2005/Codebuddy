@@ -4,7 +4,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useContext } from "react";
 import { context } from "@/context/context.js";
-import { useParams, useSearchParams } from "next/navigation";
+import { redirect, useParams, useSearchParams } from "next/navigation";
 import Loader from "@/components/loading";
 import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -35,9 +35,12 @@ export default function CodeEditor() {
   const [error, setError] = useState("");
   const [testResults, setTestResults] = useState([]); // ✅ NEW
   const [runresult, setRunresult] = useState("");
+  const params = useParams();
+  const contestId = params.id;
 
   const Router = useSearchParams();
   const index = Router.get("index");
+  const score = Router.get("score");
 
   useEffect(() => {
   // Always fetch problem details (description, tests)
@@ -66,10 +69,9 @@ export default function CodeEditor() {
   };
 
   fetchPublicData();
-  }, []); // 👈 run only once
+  }, []); 
 
   useEffect(() => {
-    // Run only when user becomes available
     if (!user) return;
 
     const fetchPrivateData = async () => {
@@ -93,7 +95,7 @@ export default function CodeEditor() {
     };
 
     fetchPrivateData();
-  }, [user]); // 👈 only runs when user becomes available
+  }, [user]); 
 
 
   function iscompleted() {
@@ -154,7 +156,7 @@ export default function CodeEditor() {
 
     setButt(true);
     setSubmitting(true);
-    setTestResults([]); // ✅ reset previous result
+    setTestResults([]); 
     setError("");
     const tests = problemData.tests;
     let result = "Accepted";
@@ -196,10 +198,49 @@ export default function CodeEditor() {
       }
     }
 
-    setTestResults(currentResults); // ✅ store the test results in state
+    setTestResults(currentResults);
+
+    
 
     if (count === tests.length) {
       showSuccess("All tests passed!");
+      if(iscompleted() !== 1){
+        try {
+          const newres = await axios.post(
+            `${URL}/api/contest/updateRank`,{
+              user: user._id,
+              date: new Date(),
+              status: "Accepted",
+              contest: contestId,
+              score : score
+            },
+            {
+              withCredentials: true
+            })
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    }
+    else{
+      showError("Some tests failed!");
+      if(iscompleted() !== 1){
+        try {
+          const newres = await axios.post(
+            `${URL}/api/contest/updateRank`,{
+              user: user._id,
+              date: new Date(),
+              status: "Wrong",
+              contest: contestId,
+              score : 0
+            },
+            {
+              withCredentials: true
+            })
+        } catch (error) {
+          console.error(error);
+        }
+      }
     }
 
     try {

@@ -2,8 +2,9 @@ import cron from "node-cron";
 import { Contest, ContestRanking } from "../models/contest.model.js";
 import {redis} from "../utils/redis.js";
 import User from "../models/user.model.js";
+import { Problem } from "../models/problem.model.js";
 
-cron.schedule("*/15 * * * *", async () => {
+cron.schedule("* * * * *", async () => {
   try {
     const time = new Date();
 
@@ -23,6 +24,7 @@ cron.schedule("*/15 * * * *", async () => {
         .sort({_id:1});
 
         const redisData = [];
+
 
         for (let i = 0; i < rankings.length; i++) {
           rankings[i].rank = i + 1;
@@ -56,6 +58,10 @@ cron.schedule("*/15 * * * *", async () => {
     for (const contest of endingContests) {
       contest.status = "Ended";
       await contest.save();
+
+      for(const prob of contest.problems){
+            await Problem.updateOne({ _id: prob.problem }, { $set: { isPublic: true } });
+      }
 
       const rankings = await redis.get(`rankings-${contest._id}`);
       if (!rankings) continue; // 🔐 safe guard
