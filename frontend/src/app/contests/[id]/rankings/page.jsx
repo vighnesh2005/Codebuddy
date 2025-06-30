@@ -14,7 +14,8 @@ export default function Rankings() {
             const response = await axios.post(`${url}/api/contest/getContestRanking`,{
                 id:id,
             });
-            setRankings(response.data.ranking);
+            const sorted = response.data.ranking.sort((a, b) => a.rank - b.rank);
+            setRankings(sorted);
             setContest(response.data.contest);
         }
         getRankings();
