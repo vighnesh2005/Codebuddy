@@ -1,5 +1,11 @@
 import express from "express";
 import { Discussions, getComments, addDiscussion , addcomment } from "../controllers/discussion.controller.js";
+import cors from "cors";
+app.use("/api/discussions", cors({
+  origin: "http://localhost:3000",
+  credentials: true
+}));
+
 
 const router = express.Router();
 
