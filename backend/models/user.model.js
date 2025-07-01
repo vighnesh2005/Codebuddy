@@ -59,10 +59,9 @@ const userSchema = new mongoose.Schema({
   },
   rank: {
     type: Number,
-    unique: true
   },
   ratingHistory:[
-    {
+    { 
       type: Number,
     }
   ]
@@ -73,7 +72,7 @@ const userSchema = new mongoose.Schema({
 userSchema.pre("save", async function (next) {
   if (this.isNew) {
     const counter = await Counter.findOneAndUpdate(
-      { id: "user_rank" },
+      { id: "user_rank" }, 
       { $inc: { seq: 1 } },
       { new: true, upsert: true }
     );

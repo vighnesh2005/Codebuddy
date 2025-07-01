@@ -122,11 +122,11 @@ export const addSubmission = async (req, res) => {
       if (!alreadyAccepted) {
         const prob = await Problem.findById(problem);
 
-        if (prob.difficulty === "easy") {
+        if (prob.difficulty === "Easy") {
           await User.updateOne({ _id: user }, { $inc: { easy: 1, problemssolved: 1 } });
-        } else if (prob.difficulty === "medium") {
+        } else if (prob.difficulty === "Medium") {
           await User.updateOne({ _id: user }, { $inc: { medium: 1, problemssolved: 1 } });
-        } else if (prob.difficulty === "hard") {
+        } else if (prob.difficulty === "Hard") {
           await User.updateOne({ _id: user }, { $inc: { hard: 1, problemssolved: 1 } });
         }
 

@@ -18,6 +18,7 @@ export const Discussions = async (req,res) =>{
 export const getComments = async (req,res)=>{
     try {
         const { id } = req.body;
+        await redis.del(`comments-${id}`);
         let comments = await redis.get(`comments-${id}`);
         if(!comments){
             comments = await DiscussionComment.find({ discussion : id }).populate("user","username profile _id").lean();

@@ -7,7 +7,7 @@ export default function Tags(props){
       const initialCount = 8;
     const {tags} = props;
       return (
-        <div className="w-4/5 bg-black flex flex-wrap gap-3 rounded-lg p-4">
+        <div className="w-full bg-black flex flex-wrap gap-3 rounded-lg p-4">
             {
                 tags.slice(0,initialCount).map((tag,index)=>{
                     return(

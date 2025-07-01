@@ -6,6 +6,7 @@ import axios from "axios";
 import Link from "next/link";
 import Loading from "@/components/loading";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { useRouter } from "next/navigation";
 
 export default function Discussions() {
     const { isLoggedIn , user} = useContext(context);
@@ -14,7 +15,8 @@ export default function Discussions() {
     const [content, setContent] = useState("");
     const [discussions,setDiscussions] = useState([]);
     const [loading, setLoading] = useState(true);
-    
+    const router = useRouter();
+
     useEffect(() => {
         const fetchdiscussion = async () => {
             try {
@@ -89,22 +91,33 @@ export default function Discussions() {
             </div>
             {
                 discussions.map((discussion,index)=>{
-                    return(
-                        <Link href={`/discussions/${discussion._id}`} key={index} >
-                            <div className="p-2 my-3 border-2 bg-black border-white rounded-md text-white
-                                hover:bg-white hover:text-black max-h-30 truncate">
-                            <div className="flex">
-                                <Avatar className="cursor-pointer ml-1">
-                                <AvatarImage src={discussion.user.profile} alt="User Avatar" />
-                                <AvatarFallback className="bg-green-600 text-white font-bold">{discussion.user?.username[0].toUpperCase()}</AvatarFallback>
-                                </Avatar>
-                                <h1 className="text-lg font-bold pl-2">{discussion.user.username}</h1>
-                            </div>
-                            <h1 className="text-lg font-bold p-2">{discussion.Title}</h1>
-                            <pre className="pl-2">{discussion.content}</pre>
-                            </div>
-                        </Link>
-                    )
+                                    return (
+                    <div
+                    key={index}
+                    onClick={() => router.push(`/discussions/${discussion._id}`)}
+                    className="p-3 my-3 border-2 bg-black border-white rounded-md text-white hover:bg-white hover:text-black cursor-pointer"
+                    >
+                    <div className="flex items-center">
+                        <button
+                        onClick={(e) => {
+                            e.stopPropagation(); // Prevent triggering outer navigation
+                            router.push(`/profile/${discussion.user.username}?id=${discussion.user._id}`);
+                        }}
+                        >
+                        <Avatar className="cursor-pointer w-12 h-12">
+                            <AvatarImage src={discussion.user.profile} alt="User Avatar" />
+                            <AvatarFallback className="bg-green-600 text-white font-bold text-xl">
+                            {discussion.user?.username[0].toUpperCase()}
+                            </AvatarFallback>
+                        </Avatar>
+                        </button>
+                        <h1 className="text-lg font-bold pl-3">{discussion.user.username}</h1>
+                    </div>
+
+                    <h1 className="text-lg font-bold px-2 pt-2">{discussion.Title}</h1>
+                    <pre className="px-2 text-sm text-gray-300">{discussion.content}</pre>
+                    </div>
+                );
                 })
             }
         </div>)

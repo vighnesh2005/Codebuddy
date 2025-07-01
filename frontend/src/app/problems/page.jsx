@@ -160,7 +160,7 @@ export default function Problems() {
             </button>
 
             {/* Problems List */}
-            <div className="w-4/5 my-5">
+            <div className="w-full my-5">
               {problems.filter(problem => problem?.isPublic !== false).map((problem, index) => (
                 <Link
                   key={index}

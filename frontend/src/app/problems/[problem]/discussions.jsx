@@ -4,6 +4,7 @@ import { useEffect, useState, useContext, memo } from "react";
 import { context } from "@/context/context";
 import { showError } from "@/components/ui/sonner";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import Link from "next/link";
 
 export default function Discussions({ id, user_id }) {
   const [comment, setComment] = useState("");
@@ -137,12 +138,14 @@ const CommentNode = ({
   return (
     <div className={`ml-${depth * 4} my-3 bg-black p-3 rounded-md`}>
       <div className="flex gap-2 items-center">
+        <Link href={`/profile/${comment.user.username}?id=${comment.user._id}`} className="flex items-center gap-2">
         <Avatar>
           <AvatarImage src={comment.user.profile} alt="User Avatar" />
           <AvatarFallback className="bg-green-600 text-white font-bold">
             {comment.user.username[0].toUpperCase()}
           </AvatarFallback>
         </Avatar>
+        </Link>
         <h1 className="text-md font-bold">{comment.user.username}</h1>
         <p className="text-sm">{comment.createdAt}</p>
       </div>

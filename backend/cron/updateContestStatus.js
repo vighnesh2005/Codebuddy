@@ -100,13 +100,18 @@ cron.schedule("* * * * *", async () => {
 
         await user.save();
       }
-
+    const allusers = await User.find({}).sort({ rating: -1 });
+    for (let i = 0; i < allusers.length; i++) {
+      await User.updateOne({ _id: allusers[i]._id }, { $set: { rank: i + 1 } });
+    }
+    console.log("🎯 Updated global user ranks based on new ratings");
       await redis.del(`rankings-${contest._id}`);
       console.log(`Finalized rankings for "${contest.name}"`);
     }
-
+    
     console.log(`✅ Contest cron ran at ${time.toLocaleTimeString()}`);
   } catch (err) {
     console.error("❌ Cron error:", err.message);
   }
 });
+ 

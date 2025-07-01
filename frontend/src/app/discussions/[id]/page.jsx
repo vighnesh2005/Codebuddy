@@ -6,6 +6,7 @@ import axios from "axios";
 import { showError } from "@/components/ui/sonner";
 import Loading from "@/components/loading";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import Link from "next/link";
 
 export default function Discussion() {
     const { id } = useParams();
@@ -74,12 +75,14 @@ export default function Discussion() {
             .map((c) => (
                 <div key={c._id} className="ml-4 mt-4" style={{ marginLeft: `${level * 24}px` }}>
                     <div className="flex items-start gap-2 bg-[#0d0d0d] p-4 rounded-xl border border-gray-600">
+                        <Link href={`/profile/${c.user.username}?id=${c.user._id}`} className="flex items-center gap-2">
                         <Avatar className="h-8 w-8 mt-1">
                             <AvatarImage src={c.user.profile || ""} />
                             <AvatarFallback className="bg-green-600 text-white font-bold">
                                 {c.user.username?.charAt(0).toUpperCase()}
                             </AvatarFallback>
                         </Avatar>
+                        </Link>
                         <div className="flex-1">
                             <div className="font-bold text-white flex justify-between items-center">
                                 <span>{c.user.username}</span>

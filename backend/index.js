@@ -9,6 +9,7 @@ import submitRoutes from './routes/submitproblem.route.js';
 import discussionRoutes from './routes/discussions.route.js';
 import contestRoutes from './routes/contest.route.js';
 import "./cron/updateContestStatus.js";
+import profileRoutes from './routes/profile.route.js';
 
 const app = express();
 
@@ -17,8 +18,8 @@ app.use(cors({
   origin: ["http://localhost:3000","https://codebuddy-1wcn.vercel.app"],
   credentials: true,
 }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ extended: true , limit: "50mb" }));
 app.use(cookieParser());
 app.use("/api/auth",authRoutes);
 app.use("/api/p",problemRoutes)
@@ -26,6 +27,7 @@ app.use("/api/addproblem",addRoutes)
 app.use("/api/submit",submitRoutes);
 app.use("/api/discussions",discussionRoutes);
 app.use("/api/contest",contestRoutes);
+app.use("/api/profile",profileRoutes);
 
 app.get('/', (req, res) => {
   res.send('Hello, World!');

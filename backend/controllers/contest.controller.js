@@ -33,7 +33,6 @@ export const addContest = async (req, res) => {
 
 export const getContest = async (req, res) => {
     try {
-        await redis.del(`contest-${req.body.id}`);
         const id = req.body.id;
         let contest = await redis.get(`contest-${id}`);
         if(!contest){
