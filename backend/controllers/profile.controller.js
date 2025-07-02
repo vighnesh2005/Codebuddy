@@ -33,7 +33,8 @@ export const updateProfile = async (req, res) => {
         user.username = username;
         user.description = description;
         await user.save();
-
+        
+        await redis.set(`user-${id}`, JSON.stringify(user), { EX: 3600 });
         return res.status(200).json({user:user});
     } catch (error) {
         console.error(error);
