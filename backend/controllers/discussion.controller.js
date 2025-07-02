@@ -18,7 +18,6 @@ export const Discussions = async (req,res) =>{
 export const getComments = async (req,res)=>{
     try {
         const { id } = req.body;
-        await redis.del(`comments-${id}`);
         let comments = await redis.get(`comments-${id}`);
         if(!comments){
             comments = await DiscussionComment.find({ discussion : id }).populate("user","username profile _id").lean();
@@ -59,18 +58,31 @@ export const getComments = async (req,res)=>{
     }
 } 
 
-export const addcomment = async (req,res)=>{
+export const addcomment = async (req, res) => {
     try {
-        const { id,user,parent,comment } = req.body;
-        const newComment = await DiscussionComment.create({ discussion:id, user:user, parent, comment });
-        res.status(201).json({message:"Comment added successfully"});
-        let prevcomments = await  redis.get(`comments-${id}`);
-        prevcomments = prevcomments ? prevcomments : [];
+        const { id, user, parent, comment } = req.body;
+
+        let newComment = await DiscussionComment.create({
+            discussion: id,
+            user,
+            parent,
+            comment
+        });
+
+        newComment = await DiscussionComment.findById(newComment._id)
+            .populate("user", "username profile _id")
+            .lean();
+
+        res.status(201).json({ message: "Comment added successfully" });
+
+        let prevcomments = await redis.get(`comments-${id}`);
+        prevcomments = prevcomments || [];
+
         prevcomments.push(newComment);
-        await redis.set(`comments-${id}`,prevcomments);
+        await redis.set(`comments-${id}`, prevcomments);
 
     } catch (error) {
         console.error(error);
-        return res.status(500).json({message:"Internal Server error"});
+        res.status(500).json({ message: "Internal Server Error" });
     }
-}
+};

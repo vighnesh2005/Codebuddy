@@ -1,10 +1,15 @@
 import { uploadImage, deleteImage } from "../utils/cloudinary.js";
 import  User  from "../models/user.model.js";
+import { redis } from "../utils/redis.js";
 
 export const getProfile = async (req, res) => {
     const { id } = req.body;
     try {
-        const user = await User.findById(id).lean();
+        let user = await redis.get(`user-${id}`);
+        if (!user) {
+        user = await User.findById(id).lean();
+        await redis.set(`user-${id}`, JSON.stringify(user), { EX: 3600 });            
+        }
         return res.status(200).json({ user: user });
     } catch (error) {
         console.error(error);
