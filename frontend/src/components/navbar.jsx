@@ -199,7 +199,7 @@ function Navbar() {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <Link
-                    href="/profile"
+                    href={`/profile/${user?.username}?id=${user?._id}`}
                     className="text-xl hover:bg-slate-700 text-white font-light font-mono p-2 px-4 hover:text-yellow-500"
                   >
                     Profile
