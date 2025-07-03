@@ -2,10 +2,15 @@
 import { Problem, Tag } from "../models/problem.model.js";
 import { Solution } from "../models/solution.model.js";
 import { redis } from "../utils/redis.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export const addProblem = async (req, res) => {
   try {
-    const { problem, solutions } = req.body;
+    const { problem, solutions, token } = req.body;
+
+    if(!token || token !== process.env.ADMIN_SECRET) return res.status(401).json({ message: "Unauthorized" });
 
     if (!problem || !problem.name || !Array.isArray(solutions)) {
       return res.status(400).json({ message: "Invalid input" });

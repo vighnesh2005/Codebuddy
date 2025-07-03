@@ -1,5 +1,8 @@
 import { Contest, ContestRanking } from "../models/contest.model.js";
 import { redis } from "../utils/redis.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export const getContests = async (req, res) => {
     try {
@@ -21,6 +24,9 @@ export const addContest = async (req, res) => {
         if(!contests){
             contests = [];
         }
+        const token = req.body.token;
+        if(!token || token !== process.env.ADMIN_SECRET) return res.status(401).json({ message: "Unauthorized" });
+        
         const contest = await Contest.create(req.body.contest);
         res.status(200).json(contest);
         contests.push(contest);
